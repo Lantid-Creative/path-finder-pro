@@ -3,9 +3,11 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { Shield, Mail, Lock, User, ArrowRight, Loader2, MapPin, Users, Bell } from "lucide-react";
 import { toast } from "sonner";
+import ForgotPassword from "@/components/ForgotPassword";
 
 const Auth = () => {
   const [isSignUp, setIsSignUp] = useState(false);
+  const [showForgot, setShowForgot] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
@@ -43,12 +45,10 @@ const Auth = () => {
 
       {/* Top section with branding */}
       <div className="flex-1 flex flex-col items-center justify-end pb-8 px-6 relative z-10 safe-area-top">
-        {/* Animated shield icon */}
         <div className="relative mb-6">
           <div className="w-20 h-20 rounded-2xl gradient-safe flex items-center justify-center shadow-xl glow-safe">
             <Shield size={36} className="text-primary-foreground" />
           </div>
-          {/* Pulse rings */}
           <span className="absolute inset-0 rounded-2xl border-2 border-safe/20 animate-[pulse-ring_3s_ease-out_infinite]" />
           <span className="absolute inset-0 rounded-2xl border-2 border-safe/10 animate-[pulse-ring_3s_ease-out_1s_infinite]" />
         </div>
@@ -56,7 +56,6 @@ const Auth = () => {
         <h1 className="font-display font-bold text-3xl text-foreground tracking-tight mb-1">PATHLY</h1>
         <p className="text-muted-foreground text-sm mb-6">Your safety companion</p>
 
-        {/* Feature pills */}
         <div className="flex flex-wrap justify-center gap-2">
           {[
             { icon: MapPin, label: "Live Tracking" },
@@ -77,107 +76,115 @@ const Auth = () => {
       {/* Form section */}
       <div className="relative z-10 px-5 pb-6 safe-area-bottom">
         <div className="bg-card rounded-3xl border border-border p-6 shadow-2xl shadow-background/80 max-w-sm mx-auto w-full">
-          {/* Tab switcher */}
-          <div className="flex bg-secondary/60 rounded-xl p-1 mb-6">
-            <button
-              type="button"
-              onClick={() => setIsSignUp(false)}
-              className={`flex-1 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${
-                !isSignUp
-                  ? "bg-primary text-primary-foreground shadow-md"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              Sign In
-            </button>
-            <button
-              type="button"
-              onClick={() => setIsSignUp(true)}
-              className={`flex-1 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${
-                isSignUp
-                  ? "bg-primary text-primary-foreground shadow-md"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              Sign Up
-            </button>
-          </div>
+          {showForgot ? (
+            <ForgotPassword onBack={() => setShowForgot(false)} />
+          ) : (
+            <>
+              {/* Tab switcher */}
+              <div className="flex bg-secondary/60 rounded-xl p-1 mb-6">
+                <button
+                  type="button"
+                  onClick={() => setIsSignUp(false)}
+                  className={`flex-1 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${
+                    !isSignUp
+                      ? "bg-primary text-primary-foreground shadow-md"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  Sign In
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsSignUp(true)}
+                  className={`flex-1 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${
+                    isSignUp
+                      ? "bg-primary text-primary-foreground shadow-md"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  Sign Up
+                </button>
+              </div>
 
-          <form onSubmit={handleSubmit} className="space-y-3.5">
-            {isSignUp && (
-              <div>
-                <label className="text-xs font-medium text-muted-foreground mb-1.5 block ml-1">Display Name</label>
-                <div className="relative">
-                  <User size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                  <input
-                    type="text"
-                    placeholder="What should we call you?"
-                    value={displayName}
-                    onChange={(e) => setDisplayName(e.target.value)}
-                    required
-                    maxLength={100}
-                    className="w-full bg-secondary/70 border border-border rounded-xl pl-10 pr-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/40 transition-all"
-                  />
+              <form onSubmit={handleSubmit} className="space-y-3.5">
+                {isSignUp && (
+                  <div>
+                    <label className="text-xs font-medium text-muted-foreground mb-1.5 block ml-1">Display Name</label>
+                    <div className="relative">
+                      <User size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                      <input
+                        type="text"
+                        placeholder="What should we call you?"
+                        value={displayName}
+                        onChange={(e) => setDisplayName(e.target.value)}
+                        required
+                        maxLength={100}
+                        className="w-full bg-secondary/70 border border-border rounded-xl pl-10 pr-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/40 transition-all"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground mb-1.5 block ml-1">Email</label>
+                  <div className="relative">
+                    <Mail size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                    <input
+                      type="email"
+                      placeholder="your@email.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      maxLength={255}
+                      className="w-full bg-secondary/70 border border-border rounded-xl pl-10 pr-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/40 transition-all"
+                    />
+                  </div>
                 </div>
-              </div>
-            )}
 
-            <div>
-              <label className="text-xs font-medium text-muted-foreground mb-1.5 block ml-1">Email</label>
-              <div className="relative">
-                <Mail size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                <input
-                  type="email"
-                  placeholder="your@email.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  maxLength={255}
-                  className="w-full bg-secondary/70 border border-border rounded-xl pl-10 pr-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/40 transition-all"
-                />
-              </div>
-            </div>
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground mb-1.5 block ml-1">Password</label>
+                  <div className="relative">
+                    <Lock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                    <input
+                      type="password"
+                      placeholder="Min. 6 characters"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      minLength={6}
+                      className="w-full bg-secondary/70 border border-border rounded-xl pl-10 pr-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/40 transition-all"
+                    />
+                  </div>
+                </div>
 
-            <div>
-              <label className="text-xs font-medium text-muted-foreground mb-1.5 block ml-1">Password</label>
-              <div className="relative">
-                <Lock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                <input
-                  type="password"
-                  placeholder="Min. 6 characters"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  minLength={6}
-                  className="w-full bg-secondary/70 border border-border rounded-xl pl-10 pr-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/40 transition-all"
-                />
-              </div>
-            </div>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full gradient-safe text-primary-foreground font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 hover:opacity-90 transition-all disabled:opacity-50 shadow-lg shadow-safe/20 mt-2"
+                >
+                  {loading ? (
+                    <Loader2 size={18} className="animate-spin" />
+                  ) : (
+                    <>
+                      {isSignUp ? "Create Account" : "Sign In"}
+                      <ArrowRight size={16} />
+                    </>
+                  )}
+                </button>
+              </form>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full gradient-safe text-primary-foreground font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 hover:opacity-90 transition-all disabled:opacity-50 shadow-lg shadow-safe/20 mt-2"
-            >
-              {loading ? (
-                <Loader2 size={18} className="animate-spin" />
-              ) : (
-                <>
-                  {isSignUp ? "Create Account" : "Sign In"}
-                  <ArrowRight size={16} />
-                </>
+              {!isSignUp && (
+                <button
+                  onClick={() => setShowForgot(true)}
+                  className="w-full mt-3 text-xs text-muted-foreground/70 hover:text-primary transition-colors text-center"
+                >
+                  Forgot password?
+                </button>
               )}
-            </button>
-          </form>
-
-          {!isSignUp && (
-            <button className="w-full mt-3 text-xs text-muted-foreground/70 hover:text-primary transition-colors text-center">
-              Forgot password?
-            </button>
+            </>
           )}
         </div>
 
-        {/* Footer text */}
         <p className="text-center text-[10px] text-muted-foreground/50 mt-4 px-8">
           By continuing, you agree to PATHLY's Terms of Service and Privacy Policy
         </p>
