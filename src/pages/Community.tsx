@@ -135,7 +135,7 @@ const Community = () => {
   };
 
   return (
-    <div className="min-h-[100dvh] bg-background flex flex-col">
+    <div className="min-h-[100dvh] pb-16 bg-background flex flex-col">
       {/* Header */}
       <div className="safe-area-top bg-card border-b border-border px-4 py-3 flex items-center gap-3">
         <button onClick={() => navigate("/")} className="p-1 text-muted-foreground hover:text-foreground">

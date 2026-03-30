@@ -180,7 +180,7 @@ const Chat = () => {
 
   // Chat view
   return (
-    <div className="h-[100dvh] bg-background flex flex-col">
+    <div className="h-[100dvh] pb-14 bg-background flex flex-col">
       {/* Header */}
       <div className="safe-area-top bg-card border-b border-border px-4 py-3 flex items-center gap-3 shrink-0">
         <button
