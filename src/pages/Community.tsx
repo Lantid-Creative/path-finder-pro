@@ -53,7 +53,52 @@ const Community = () => {
   const [formMessage, setFormMessage] = useState("");
   const [formDescription, setFormDescription] = useState("");
   const [formLocation, setFormLocation] = useState("");
+  const [formLat, setFormLat] = useState<number | null>(null);
+  const [formLng, setFormLng] = useState<number | null>(null);
+  const [detectingLocation, setDetectingLocation] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+
+  const detectLocation = async () => {
+    setDetectingLocation(true);
+    try {
+      const pos = await new Promise<GeolocationPosition>((resolve, reject) =>
+        navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000, enableHighAccuracy: true })
+      );
+      const lat = pos.coords.latitude;
+      const lng = pos.coords.longitude;
+      setFormLat(lat);
+      setFormLng(lng);
+
+      // Reverse geocode using Google Maps Geocoding
+      try {
+        const geocoder = new google.maps.Geocoder();
+        const result = await geocoder.geocode({ location: { lat, lng } });
+        if (result.results?.[0]) {
+          // Try to find a meaningful name (locality, neighborhood, or formatted address)
+          const components = result.results[0].address_components;
+          const neighborhood = components?.find(c => c.types.includes("neighborhood"))?.long_name;
+          const locality = components?.find(c => c.types.includes("locality"))?.long_name;
+          const sublocality = components?.find(c => c.types.includes("sublocality"))?.long_name;
+          const route = components?.find(c => c.types.includes("route"))?.long_name;
+          const locationName = neighborhood || sublocality || (route ? `${route}, ${locality || ""}`.trim() : locality) || result.results[0].formatted_address;
+          setFormLocation(locationName || "");
+        }
+      } catch {
+        // Fallback: use coordinates as location name
+        setFormLocation(`${lat.toFixed(4)}, ${lng.toFixed(4)}`);
+      }
+    } catch {
+      toast.error("Could not detect your location. Please enable location services.");
+    }
+    setDetectingLocation(false);
+  };
+
+  // Auto-detect location when form opens
+  useEffect(() => {
+    if (showForm && !formLat) {
+      detectLocation();
+    }
+  }, [showForm]);
 
   useEffect(() => {
     fetchAlerts();
@@ -76,7 +121,6 @@ const Community = () => {
       .limit(50);
 
     if (!error && data) {
-      // Fetch profiles for each alert
       const userIds = [...new Set(data.map(a => a.user_id))];
       const { data: profiles } = await supabase
         .from("profiles")
@@ -91,18 +135,11 @@ const Community = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
+    if (!user || !formLocation.trim()) return;
     setSubmitting(true);
 
-    // Get user location
-    let lat = 40.7128, lng = -74.006;
-    try {
-      const pos = await new Promise<GeolocationPosition>((resolve, reject) =>
-        navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 })
-      );
-      lat = pos.coords.latitude;
-      lng = pos.coords.longitude;
-    } catch {}
+    const lat = formLat || 0;
+    const lng = formLng || 0;
 
     const { error } = await supabase.from("community_alerts").insert({
       user_id: user.id,
@@ -111,7 +148,7 @@ const Community = () => {
       description: formDescription.trim() || null,
       latitude: lat,
       longitude: lng,
-      location_name: formLocation.trim() || null,
+      location_name: formLocation.trim(),
     });
 
     if (error) {
@@ -122,6 +159,8 @@ const Community = () => {
       setFormMessage("");
       setFormDescription("");
       setFormLocation("");
+      setFormLat(null);
+      setFormLng(null);
     }
     setSubmitting(false);
   };
