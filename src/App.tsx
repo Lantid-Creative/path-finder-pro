@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Community from "./pages/Community";
 import Chat from "./pages/Chat";
+import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -22,12 +23,13 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
 const AppLayout = () => {
   const location = useLocation();
-  const showTabBar = location.pathname !== "/auth";
+  const showTabBar = !["/auth", "/reset-password"].includes(location.pathname);
 
   return (
     <>
       <Routes>
         <Route path="/auth" element={<Auth />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
         <Route path="/community" element={<ProtectedRoute><Community /></ProtectedRoute>} />
         <Route path="/alerts" element={<ProtectedRoute><Community /></ProtectedRoute>} />
