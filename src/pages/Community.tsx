@@ -53,7 +53,48 @@ const Community = () => {
   const [formMessage, setFormMessage] = useState("");
   const [formDescription, setFormDescription] = useState("");
   const [formLocation, setFormLocation] = useState("");
+  const [formLat, setFormLat] = useState<number | null>(null);
+  const [formLng, setFormLng] = useState<number | null>(null);
+  const [detectingLocation, setDetectingLocation] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+
+  const detectLocation = async () => {
+    setDetectingLocation(true);
+    try {
+      const pos = await new Promise<GeolocationPosition>((resolve, reject) =>
+        navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000, enableHighAccuracy: true })
+      );
+      const lat = pos.coords.latitude;
+      const lng = pos.coords.longitude;
+      setFormLat(lat);
+      setFormLng(lng);
+
+      // Reverse geocode using Nominatim
+      try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&addressdetails=1`);
+        const data = await res.json();
+        if (data?.address) {
+          const a = data.address;
+          const locationName = a.neighbourhood || a.suburb || a.village || a.town || a.city || a.county || data.display_name?.split(",").slice(0, 2).join(",") || "";
+          setFormLocation(locationName);
+        } else {
+          setFormLocation(`${lat.toFixed(4)}, ${lng.toFixed(4)}`);
+        }
+      } catch {
+        setFormLocation(`${lat.toFixed(4)}, ${lng.toFixed(4)}`);
+      }
+    } catch {
+      toast.error("Could not detect your location. Please enable location services.");
+    }
+    setDetectingLocation(false);
+  };
+
+  // Auto-detect location when form opens
+  useEffect(() => {
+    if (showForm && !formLat) {
+      detectLocation();
+    }
+  }, [showForm]);
 
   useEffect(() => {
     fetchAlerts();
@@ -76,7 +117,6 @@ const Community = () => {
       .limit(50);
 
     if (!error && data) {
-      // Fetch profiles for each alert
       const userIds = [...new Set(data.map(a => a.user_id))];
       const { data: profiles } = await supabase
         .from("profiles")
@@ -91,18 +131,11 @@ const Community = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
+    if (!user || !formLocation.trim()) return;
     setSubmitting(true);
 
-    // Get user location
-    let lat = 40.7128, lng = -74.006;
-    try {
-      const pos = await new Promise<GeolocationPosition>((resolve, reject) =>
-        navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 })
-      );
-      lat = pos.coords.latitude;
-      lng = pos.coords.longitude;
-    } catch {}
+    const lat = formLat || 0;
+    const lng = formLng || 0;
 
     const { error } = await supabase.from("community_alerts").insert({
       user_id: user.id,
@@ -111,7 +144,7 @@ const Community = () => {
       description: formDescription.trim() || null,
       latitude: lat,
       longitude: lng,
-      location_name: formLocation.trim() || null,
+      location_name: formLocation.trim(),
     });
 
     if (error) {
@@ -122,6 +155,8 @@ const Community = () => {
       setFormMessage("");
       setFormDescription("");
       setFormLocation("");
+      setFormLat(null);
+      setFormLng(null);
     }
     setSubmitting(false);
   };
@@ -243,13 +278,25 @@ const Community = () => {
                 maxLength={200}
                 className="w-full bg-secondary border border-border rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
               />
-              <input
-                placeholder="Location name (optional)"
-                value={formLocation}
-                onChange={(e) => setFormLocation(e.target.value)}
-                maxLength={100}
-                className="w-full bg-secondary border border-border rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
-              />
+              <div className="relative">
+                <input
+                  placeholder={detectingLocation ? "Detecting location..." : "Location name"}
+                  value={formLocation}
+                  onChange={(e) => setFormLocation(e.target.value)}
+                  required
+                  maxLength={100}
+                  className="w-full bg-secondary border border-border rounded-xl px-4 py-3 pr-10 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+                />
+                <button
+                  type="button"
+                  onClick={detectLocation}
+                  disabled={detectingLocation}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-primary hover:text-primary/80 transition-colors"
+                  title="Detect current location"
+                >
+                  {detectingLocation ? <Loader2 size={16} className="animate-spin" /> : <MapPin size={16} />}
+                </button>
+              </div>
               <textarea
                 placeholder="Additional details (optional)"
                 value={formDescription}
@@ -261,7 +308,7 @@ const Community = () => {
 
               <button
                 type="submit"
-                disabled={submitting || !formMessage.trim()}
+                disabled={submitting || !formMessage.trim() || !formLocation.trim()}
                 className="w-full gradient-safe text-primary-foreground font-semibold py-3 rounded-xl flex items-center justify-center gap-2 disabled:opacity-50"
               >
                 {submitting ? <Loader2 size={18} className="animate-spin" /> : <Send size={16} />}
