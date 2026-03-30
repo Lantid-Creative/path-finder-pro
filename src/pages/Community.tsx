@@ -71,11 +71,21 @@ const Community = () => {
   const fetchAlerts = async () => {
     const { data, error } = await supabase
       .from("community_alerts")
-      .select("*, profiles!community_alerts_user_id_fkey(display_name)")
+      .select("*")
       .order("created_at", { ascending: false })
       .limit(50);
 
-    if (!error && data) setAlerts(data as Alert[]);
+    if (!error && data) {
+      // Fetch profiles for each alert
+      const userIds = [...new Set(data.map(a => a.user_id))];
+      const { data: profiles } = await supabase
+        .from("profiles")
+        .select("user_id, display_name")
+        .in("user_id", userIds);
+
+      const profileMap = new Map(profiles?.map(p => [p.user_id, p.display_name]) || []);
+      setAlerts(data.map(a => ({ ...a, profiles: { display_name: profileMap.get(a.user_id) || "Anonymous" } })));
+    }
     setLoading(false);
   };
 

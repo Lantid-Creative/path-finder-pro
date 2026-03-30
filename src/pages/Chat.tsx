@@ -67,12 +67,20 @@ const Chat = () => {
     const fetchMessages = async () => {
       const { data } = await supabase
         .from("chat_messages")
-        .select("*, profiles!chat_messages_user_id_fkey(display_name)")
+        .select("*")
         .eq("room_id", selectedRoom.id)
         .order("created_at", { ascending: true })
         .limit(100);
 
-      if (data) setMessages(data as Message[]);
+      if (data) {
+        const userIds = [...new Set(data.map(m => m.user_id))];
+        const { data: profiles } = await supabase
+          .from("profiles")
+          .select("user_id, display_name")
+          .in("user_id", userIds);
+        const profileMap = new Map(profiles?.map(p => [p.user_id, p.display_name]) || []);
+        setMessages(data.map(m => ({ ...m, profiles: { display_name: profileMap.get(m.user_id) || "User" } })));
+      }
     };
     fetchMessages();
 
@@ -84,14 +92,18 @@ const Chat = () => {
         table: "chat_messages",
         filter: `room_id=eq.${selectedRoom.id}`,
       }, async (payload) => {
-        // Fetch the full message with profile
         const { data } = await supabase
           .from("chat_messages")
-          .select("*, profiles!chat_messages_user_id_fkey(display_name)")
+          .select("*")
           .eq("id", payload.new.id)
           .single();
         if (data) {
-          setMessages((prev) => [...prev, data as Message]);
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("display_name")
+            .eq("user_id", data.user_id)
+            .single();
+          setMessages((prev) => [...prev, { ...data, profiles: { display_name: profile?.display_name || "User" } }]);
         }
       })
       .subscribe();
