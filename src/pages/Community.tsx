@@ -278,13 +278,25 @@ const Community = () => {
                 maxLength={200}
                 className="w-full bg-secondary border border-border rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
               />
-              <input
-                placeholder="Location name (optional)"
-                value={formLocation}
-                onChange={(e) => setFormLocation(e.target.value)}
-                maxLength={100}
-                className="w-full bg-secondary border border-border rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
-              />
+              <div className="relative">
+                <input
+                  placeholder={detectingLocation ? "Detecting location..." : "Location name"}
+                  value={formLocation}
+                  onChange={(e) => setFormLocation(e.target.value)}
+                  required
+                  maxLength={100}
+                  className="w-full bg-secondary border border-border rounded-xl px-4 py-3 pr-10 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+                />
+                <button
+                  type="button"
+                  onClick={detectLocation}
+                  disabled={detectingLocation}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-primary hover:text-primary/80 transition-colors"
+                  title="Detect current location"
+                >
+                  {detectingLocation ? <Loader2 size={16} className="animate-spin" /> : <MapPin size={16} />}
+                </button>
+              </div>
               <textarea
                 placeholder="Additional details (optional)"
                 value={formDescription}
