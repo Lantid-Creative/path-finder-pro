@@ -7,6 +7,7 @@ import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import BottomTabBar from "@/components/BottomTabBar";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
+import SignUp from "./pages/SignUp";
 import Community from "./pages/Community";
 import Chat from "./pages/Chat";
 import ResetPassword from "./pages/ResetPassword";
