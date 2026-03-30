@@ -1,9 +1,10 @@
-import { useState } from "react";
 import {
-  Shield, Home, Users, Bell, Settings, User, Map as MapIcon,
-  Phone, Video, Mic, History, Star, HelpCircle, LogOut, ChevronDown
+  Shield, Users, Bell, Settings, User, Map as MapIcon,
+  Phone, Video, History, Star, HelpCircle, LogOut, MessageCircle
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 import {
   Sidebar,
   SidebarContent,
@@ -17,11 +18,12 @@ import {
   SidebarHeader,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { toast } from "sonner";
 
 const mainNav = [
   { title: "Map", url: "/", icon: MapIcon },
-  { title: "Alerts", url: "/alerts", icon: Bell },
   { title: "Community", url: "/community", icon: Users },
+  { title: "Chat", url: "/chat", icon: MessageCircle },
   { title: "Contacts", url: "/contacts", icon: Phone },
   { title: "Evidence", url: "/evidence", icon: Video },
 ];
@@ -36,6 +38,17 @@ const secondaryNav = [
 export function AppSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    await signOut();
+    toast.success("Signed out");
+    navigate("/auth");
+  };
+
+  const displayName = user?.user_metadata?.display_name || user?.email?.split("@")[0] || "User";
+  const initials = displayName.slice(0, 2).toUpperCase();
 
   return (
     <Sidebar collapsible="offcanvas" className="border-r-0">
@@ -57,14 +70,14 @@ export function AppSidebar() {
       {!collapsed && (
         <div className="mx-3 mb-2 p-3 rounded-xl bg-secondary/50 border border-border/50">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-primary/20 flex items-center justify-center">
-              <User size={16} className="text-primary" />
+            <div className="w-9 h-9 rounded-full bg-primary/20 flex items-center justify-center text-xs font-bold text-primary">
+              {initials}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-foreground truncate">Alex Johnson</p>
+              <p className="text-sm font-medium text-foreground truncate">{displayName}</p>
               <div className="flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-safe" />
-                <span className="text-xs text-muted-foreground">Safe</span>
+                <span className="text-xs text-muted-foreground">Online</span>
               </div>
             </div>
           </div>
@@ -125,7 +138,10 @@ export function AppSidebar() {
 
       <SidebarFooter className="p-3">
         {!collapsed && (
-          <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-muted-foreground hover:bg-secondary/60 transition-colors text-sm">
+          <button
+            onClick={handleSignOut}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-muted-foreground hover:bg-secondary/60 transition-colors text-sm"
+          >
             <LogOut size={18} />
             <span>Sign Out</span>
           </button>
