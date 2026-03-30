@@ -12,6 +12,11 @@ import Community from "./pages/Community";
 import Chat from "./pages/Chat";
 import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
+import AdminLayout from "./pages/admin/AdminLayout";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminUsers from "./pages/admin/AdminUsers";
+import AdminAlerts from "./pages/admin/AdminAlerts";
+import AdminChat from "./pages/admin/AdminChat";
 
 const queryClient = new QueryClient();
 
@@ -24,7 +29,8 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
 const AppLayout = () => {
   const location = useLocation();
-  const showTabBar = !["/auth", "/auth/signup", "/reset-password"].includes(location.pathname);
+  const hideTabBar = ["/auth", "/auth/signup", "/reset-password"].includes(location.pathname) ||
+    location.pathname.startsWith("/admin");
 
   return (
     <>
@@ -36,9 +42,15 @@ const AppLayout = () => {
         <Route path="/community" element={<ProtectedRoute><Community /></ProtectedRoute>} />
         <Route path="/alerts" element={<ProtectedRoute><Community /></ProtectedRoute>} />
         <Route path="/chat" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<AdminDashboard />} />
+          <Route path="users" element={<AdminUsers />} />
+          <Route path="alerts" element={<AdminAlerts />} />
+          <Route path="chat" element={<AdminChat />} />
+        </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>
-      {showTabBar && <BottomTabBar />}
+      {!hideTabBar && <BottomTabBar />}
     </>
   );
 };
