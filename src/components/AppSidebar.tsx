@@ -16,7 +16,6 @@ import {
   SidebarMenuItem,
   SidebarFooter,
   SidebarHeader,
-  useSidebar,
 } from "@/components/ui/sidebar";
 import { toast } from "sonner";
 
@@ -36,8 +35,6 @@ const secondaryNav = [
 ];
 
 export function AppSidebar() {
-  const { state } = useSidebar();
-  const collapsed = state === "collapsed";
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
 
@@ -57,32 +54,28 @@ export function AppSidebar() {
           <div className="w-10 h-10 rounded-xl gradient-safe flex items-center justify-center shadow-lg">
             <Shield size={20} className="text-primary-foreground" />
           </div>
-          {!collapsed && (
-            <div>
-              <h2 className="font-display font-bold text-lg text-foreground tracking-tight">PATHLY</h2>
-              <p className="text-xs text-muted-foreground">Stay safe, stay connected</p>
-            </div>
-          )}
+          <div>
+            <h2 className="font-display font-bold text-lg text-foreground tracking-tight">PATHLY</h2>
+            <p className="text-xs text-muted-foreground">Stay safe, stay connected</p>
+          </div>
         </div>
       </SidebarHeader>
 
       {/* User profile card */}
-      {!collapsed && (
-        <div className="mx-3 mb-2 p-3 rounded-xl bg-secondary/50 border border-border/50">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-primary/20 flex items-center justify-center text-xs font-bold text-primary">
-              {initials}
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-foreground truncate">{displayName}</p>
-              <div className="flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-safe" />
-                <span className="text-xs text-muted-foreground">Online</span>
-              </div>
+      <div className="mx-3 mb-2 p-3 rounded-xl bg-secondary/50 border border-border/50">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-full bg-primary/20 flex items-center justify-center text-xs font-bold text-primary">
+            {initials}
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-foreground truncate">{displayName}</p>
+            <div className="flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-safe" />
+              <span className="text-xs text-muted-foreground">Online</span>
             </div>
           </div>
         </div>
-      )}
+      </div>
 
       <SidebarContent>
         <SidebarGroup>
@@ -100,8 +93,8 @@ export function AppSidebar() {
                       className="hover:bg-secondary/60 rounded-lg mx-1 px-3 py-2.5 flex items-center gap-3 text-muted-foreground"
                       activeClassName="bg-primary/10 text-primary font-medium"
                     >
-                      <item.icon className="h-[18px] w-[18px]" />
-                      {!collapsed && <span className="text-sm">{item.title}</span>}
+                      <item.icon className="h-[18px] w-[18px] shrink-0" />
+                      <span className="text-sm">{item.title}</span>
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -125,8 +118,8 @@ export function AppSidebar() {
                       className="hover:bg-secondary/60 rounded-lg mx-1 px-3 py-2.5 flex items-center gap-3 text-muted-foreground"
                       activeClassName="bg-primary/10 text-primary font-medium"
                     >
-                      <item.icon className="h-[18px] w-[18px]" />
-                      {!collapsed && <span className="text-sm">{item.title}</span>}
+                      <item.icon className="h-[18px] w-[18px] shrink-0" />
+                      <span className="text-sm">{item.title}</span>
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -137,15 +130,13 @@ export function AppSidebar() {
       </SidebarContent>
 
       <SidebarFooter className="p-3">
-        {!collapsed && (
-          <button
-            onClick={handleSignOut}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-muted-foreground hover:bg-secondary/60 transition-colors text-sm"
-          >
-            <LogOut size={18} />
-            <span>Sign Out</span>
-          </button>
-        )}
+        <button
+          onClick={handleSignOut}
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-muted-foreground hover:bg-secondary/60 transition-colors text-sm"
+        >
+          <LogOut size={18} />
+          <span>Sign Out</span>
+        </button>
       </SidebarFooter>
     </Sidebar>
   );
