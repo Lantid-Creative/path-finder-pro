@@ -113,7 +113,7 @@ const Index = () => {
           </div>
 
           {/* SOS Button — floating center bottom above sheet */}
-          <div className="absolute bottom-44 left-1/2 -translate-x-1/2 z-20">
+          <div className="absolute bottom-[14.5rem] left-1/2 -translate-x-1/2 z-20">
             <SOSButton onTrigger={handleSOS} isActive={isAlertActive} />
           </div>
 
@@ -131,7 +131,7 @@ const Index = () => {
           <BottomSheet isAlertActive={isAlertActive} />
 
           {/* Location info bar — just above bottom sheet */}
-          <div className="absolute bottom-[170px] left-3 z-10">
+          <div className="absolute bottom-[13.5rem] left-3 z-10">
             <div className="bg-card backdrop-blur-md rounded-xl px-3 py-2 border border-border shadow">
               <div className="flex items-center gap-2">
                 <Navigation size={12} className="text-primary" />
