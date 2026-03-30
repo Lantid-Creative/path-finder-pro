@@ -3,9 +3,11 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { Shield, Mail, Lock, User, ArrowRight, Loader2, MapPin, Users, Bell } from "lucide-react";
 import { toast } from "sonner";
+import ForgotPassword from "@/components/ForgotPassword";
 
 const Auth = () => {
   const [isSignUp, setIsSignUp] = useState(false);
+  const [showForgot, setShowForgot] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
@@ -170,11 +172,12 @@ const Auth = () => {
             </button>
           </form>
 
-          {!isSignUp && (
-            <button className="w-full mt-3 text-xs text-muted-foreground/70 hover:text-primary transition-colors text-center">
-              Forgot password?
-            </button>
-          )}
+          {showForgot ? (
+            <ForgotPassword onBack={() => setShowForgot(false)} />
+          ) : (
+          <>
+          {/* Tab switcher */}
+          <div className="flex bg-secondary/60 rounded-xl p-1 mb-6">
         </div>
 
         {/* Footer text */}
