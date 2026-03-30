@@ -308,7 +308,7 @@ const Community = () => {
 
               <button
                 type="submit"
-                disabled={submitting || !formMessage.trim()}
+                disabled={submitting || !formMessage.trim() || !formLocation.trim()}
                 className="w-full gradient-safe text-primary-foreground font-semibold py-3 rounded-xl flex items-center justify-center gap-2 disabled:opacity-50"
               >
                 {submitting ? <Loader2 size={18} className="animate-spin" /> : <Send size={16} />}
