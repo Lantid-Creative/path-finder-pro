@@ -1,20 +1,34 @@
 import { useState } from "react";
-import StatusBar from "@/components/StatusBar";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/AppSidebar";
+import MapView, { useLocationTracking } from "@/components/MapView";
 import SOSButton from "@/components/SOSButton";
-import MapView from "@/components/MapView";
-import TrustedContacts from "@/components/TrustedContacts";
-import CommunityAlerts from "@/components/CommunityAlerts";
-import QuickFeatures from "@/components/QuickFeatures";
+import BottomSheet from "@/components/BottomSheet";
 import { toast } from "sonner";
+import {
+  Shield, Menu, Search, Locate, Layers, Wifi, WifiOff,
+  Navigation, Bell, Mic, Video
+} from "lucide-react";
 
 const Index = () => {
   const [isAlertActive, setIsAlertActive] = useState(false);
+  const { location, isTracking, connectionStatus, startTracking } = useLocationTracking();
+
+  const center = location ? { lat: location.lat, lng: location.lng } : { lat: 40.7128, lng: -74.006 };
+
+  const communityMarkers = [
+    { lat: center.lat + 0.003, lng: center.lng + 0.004, type: "safe" as const },
+    { lat: center.lat - 0.002, lng: center.lng + 0.006, type: "safe" as const },
+    { lat: center.lat + 0.005, lng: center.lng - 0.003, type: "safe" as const },
+    { lat: center.lat - 0.004, lng: center.lng - 0.005, type: "warning" as const },
+    { lat: center.lat + 0.001, lng: center.lng - 0.007, type: "safe" as const },
+  ];
 
   const handleSOS = () => {
     setIsAlertActive((prev) => !prev);
     if (!isAlertActive) {
       toast.error("🚨 Emergency Alert Triggered!", {
-        description: "Notifying trusted contacts and sharing location...",
+        description: "Notifying contacts & sharing location...",
         duration: 5000,
       });
     } else {
@@ -26,49 +40,112 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <StatusBar isAlertActive={isAlertActive} />
+    <SidebarProvider defaultOpen={false}>
+      <div className="relative h-[100dvh] w-full flex overflow-hidden">
+        <AppSidebar />
 
-      <div className="flex-1 p-3 sm:p-4 lg:p-6">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-5 h-full">
-          {/* Left sidebar */}
-          <div className="lg:col-span-3 space-y-4 order-2 lg:order-1">
-            <TrustedContacts />
-            <QuickFeatures />
-          </div>
+        <div className="flex-1 relative h-full">
+          {/* Full-screen map */}
+          <MapView location={location} communityMarkers={communityMarkers} />
 
-          {/* Center - Map + SOS */}
-          <div className="lg:col-span-6 space-y-4 order-1 lg:order-2">
-            <div className="relative">
-              <MapView />
+          {/* Top bar — Google Maps style */}
+          <div className="absolute top-0 left-0 right-0 z-10 safe-area-top">
+            <div className="flex items-center gap-2 p-3">
+              {/* Menu + Search bar */}
+              <div className="flex-1 flex items-center gap-2 bg-card/90 backdrop-blur-xl rounded-full px-1 py-1 shadow-lg border border-border/40">
+                <SidebarTrigger className="p-2.5 rounded-full hover:bg-secondary/60 text-muted-foreground shrink-0">
+                  <Menu size={20} />
+                </SidebarTrigger>
+                <div className="flex-1 flex items-center gap-2 pr-3">
+                  <Search size={16} className="text-muted-foreground shrink-0" />
+                  <span className="text-sm text-muted-foreground">Search places...</span>
+                </div>
 
-              {/* SOS overlay on map */}
-              <div className="absolute bottom-6 left-1/2 -translate-x-1/2">
-                <SOSButton onTrigger={handleSOS} isActive={isAlertActive} />
+                {/* Status indicator */}
+                <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold mr-1 ${
+                  isAlertActive
+                    ? "bg-alert/20 text-alert"
+                    : "bg-safe/20 text-safe"
+                }`}>
+                  <span className={`w-1.5 h-1.5 rounded-full ${isAlertActive ? "bg-alert animate-pulse" : "bg-safe"}`} />
+                  {isAlertActive ? "ALERT" : "SAFE"}
+                </div>
               </div>
             </div>
+          </div>
 
-            {/* Status message */}
-            <div className={`text-center py-3 px-4 rounded-xl border transition-all ${
-              isAlertActive
-                ? "bg-alert/10 border-alert/30 text-alert"
-                : "bg-safe/10 border-safe/30 text-safe"
-            }`}>
-              <p className="text-sm font-medium">
-                {isAlertActive
-                  ? "🚨 Alert active — sharing location with 4 contacts"
-                  : "You're safe. Tap SOS if you need help."}
-              </p>
+          {/* Right side floating buttons (Google Maps style) */}
+          <div className="absolute right-3 top-1/2 -translate-y-1/2 z-10 flex flex-col gap-2">
+            {/* Record buttons */}
+            <button className="p-2.5 bg-card/90 backdrop-blur-xl rounded-full shadow-lg border border-border/40 text-muted-foreground hover:text-foreground transition-colors">
+              <Video size={18} />
+            </button>
+            <button className="p-2.5 bg-card/90 backdrop-blur-xl rounded-full shadow-lg border border-border/40 text-muted-foreground hover:text-foreground transition-colors">
+              <Mic size={18} />
+            </button>
+
+            <div className="h-2" />
+
+            {/* Map controls */}
+            <button className="p-2.5 bg-card/90 backdrop-blur-xl rounded-full shadow-lg border border-border/40 text-muted-foreground hover:text-foreground transition-colors">
+              <Layers size={18} />
+            </button>
+            <button
+              onClick={startTracking}
+              className="p-2.5 bg-card/90 backdrop-blur-xl rounded-full shadow-lg border border-border/40 text-primary hover:text-primary/80 transition-colors"
+            >
+              <Locate size={18} />
+            </button>
+          </div>
+
+          {/* Connection status chip */}
+          <div className="absolute top-16 right-3 z-10">
+            <div className="flex items-center gap-1.5 bg-card/80 backdrop-blur-md rounded-full px-2.5 py-1 border border-border/40 shadow">
+              {connectionStatus === "connected" ? (
+                <Wifi size={11} className="text-safe" />
+              ) : (
+                <WifiOff size={11} className="text-alert" />
+              )}
+              <span className="text-[10px] text-muted-foreground">
+                {connectionStatus === "connected" ? "Live" : "Offline"}
+              </span>
             </div>
           </div>
 
-          {/* Right sidebar */}
-          <div className="lg:col-span-3 space-y-4 order-3">
-            <CommunityAlerts />
+          {/* SOS Button — floating center bottom above sheet */}
+          <div className="absolute bottom-44 left-1/2 -translate-x-1/2 z-20">
+            <SOSButton onTrigger={handleSOS} isActive={isAlertActive} />
+          </div>
+
+          {/* Alert banner when active */}
+          {isAlertActive && (
+            <div className="absolute top-16 left-3 right-14 z-10">
+              <div className="bg-alert/90 backdrop-blur-md text-destructive-foreground px-4 py-2 rounded-xl shadow-lg flex items-center gap-2">
+                <Bell size={14} className="animate-pulse shrink-0" />
+                <p className="text-xs font-medium flex-1">Alert active — sharing location with 4 contacts</p>
+              </div>
+            </div>
+          )}
+
+          {/* Bottom sheet */}
+          <BottomSheet isAlertActive={isAlertActive} />
+
+          {/* Location info bar — just above bottom sheet */}
+          <div className="absolute bottom-[170px] left-3 z-10">
+            <div className="bg-card/80 backdrop-blur-md rounded-xl px-3 py-2 border border-border/40 shadow">
+              <div className="flex items-center gap-2">
+                <Navigation size={12} className="text-primary" />
+                <p className="text-[11px] text-muted-foreground">
+                  {location
+                    ? `${location.lat.toFixed(4)}, ${location.lng.toFixed(4)}`
+                    : "Locating..."}
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </SidebarProvider>
   );
 };
 
