@@ -39,7 +39,7 @@ const BottomSheet = ({ isAlertActive }: BottomSheetProps) => {
       )}
 
       <div
-        className={`absolute left-0 right-0 bottom-0 z-30 transition-all duration-300 ease-out ${
+        className={`absolute left-0 right-0 bottom-14 z-30 transition-all duration-300 ease-out ${
           expanded ? "h-[65vh]" : "h-auto"
         }`}
       >
