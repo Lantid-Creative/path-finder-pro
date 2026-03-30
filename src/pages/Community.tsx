@@ -69,22 +69,18 @@ const Community = () => {
       setFormLat(lat);
       setFormLng(lng);
 
-      // Reverse geocode using Google Maps Geocoding
+      // Reverse geocode using Nominatim
       try {
-        const geocoder = new google.maps.Geocoder();
-        const result = await geocoder.geocode({ location: { lat, lng } });
-        if (result.results?.[0]) {
-          // Try to find a meaningful name (locality, neighborhood, or formatted address)
-          const components = result.results[0].address_components;
-          const neighborhood = components?.find(c => c.types.includes("neighborhood"))?.long_name;
-          const locality = components?.find(c => c.types.includes("locality"))?.long_name;
-          const sublocality = components?.find(c => c.types.includes("sublocality"))?.long_name;
-          const route = components?.find(c => c.types.includes("route"))?.long_name;
-          const locationName = neighborhood || sublocality || (route ? `${route}, ${locality || ""}`.trim() : locality) || result.results[0].formatted_address;
-          setFormLocation(locationName || "");
+        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&addressdetails=1`);
+        const data = await res.json();
+        if (data?.address) {
+          const a = data.address;
+          const locationName = a.neighbourhood || a.suburb || a.village || a.town || a.city || a.county || data.display_name?.split(",").slice(0, 2).join(",") || "";
+          setFormLocation(locationName);
+        } else {
+          setFormLocation(`${lat.toFixed(4)}, ${lng.toFixed(4)}`);
         }
       } catch {
-        // Fallback: use coordinates as location name
         setFormLocation(`${lat.toFixed(4)}, ${lng.toFixed(4)}`);
       }
     } catch {
