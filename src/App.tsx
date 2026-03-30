@@ -24,12 +24,13 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
 const AppLayout = () => {
   const location = useLocation();
-  const showTabBar = !["/auth", "/reset-password"].includes(location.pathname);
+  const showTabBar = !["/auth", "/auth/signup", "/reset-password"].includes(location.pathname);
 
   return (
     <>
       <Routes>
         <Route path="/auth" element={<Auth />} />
+        <Route path="/auth/signup" element={<SignUp />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
         <Route path="/community" element={<ProtectedRoute><Community /></ProtectedRoute>} />
