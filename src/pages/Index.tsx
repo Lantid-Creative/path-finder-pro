@@ -52,7 +52,7 @@ const Index = () => {
           <div className="absolute top-0 left-0 right-0 z-10 safe-area-top">
             <div className="flex items-center gap-2 p-3">
               {/* Menu + Search bar */}
-              <div className="flex-1 flex items-center gap-2 bg-card/90 backdrop-blur-xl rounded-full px-1 py-1 shadow-lg border border-border/40">
+              <div className="flex-1 flex items-center gap-2 bg-card backdrop-blur-xl rounded-full px-1 py-1 shadow-lg border border-border">
                 <SidebarTrigger className="p-2.5 rounded-full hover:bg-secondary/60 text-muted-foreground shrink-0">
                   <Menu size={20} />
                 </SidebarTrigger>
@@ -77,22 +77,22 @@ const Index = () => {
           {/* Right side floating buttons (Google Maps style) */}
           <div className="absolute right-3 top-1/2 -translate-y-1/2 z-10 flex flex-col gap-2">
             {/* Record buttons */}
-            <button className="p-2.5 bg-card/90 backdrop-blur-xl rounded-full shadow-lg border border-border/40 text-muted-foreground hover:text-foreground transition-colors">
+            <button className="p-2.5 bg-card backdrop-blur-xl rounded-full shadow-lg border border-border text-foreground hover:text-primary transition-colors">
               <Video size={18} />
             </button>
-            <button className="p-2.5 bg-card/90 backdrop-blur-xl rounded-full shadow-lg border border-border/40 text-muted-foreground hover:text-foreground transition-colors">
+            <button className="p-2.5 bg-card backdrop-blur-xl rounded-full shadow-lg border border-border text-foreground hover:text-primary transition-colors">
               <Mic size={18} />
             </button>
 
             <div className="h-2" />
 
             {/* Map controls */}
-            <button className="p-2.5 bg-card/90 backdrop-blur-xl rounded-full shadow-lg border border-border/40 text-muted-foreground hover:text-foreground transition-colors">
+            <button className="p-2.5 bg-card backdrop-blur-xl rounded-full shadow-lg border border-border text-foreground hover:text-primary transition-colors">
               <Layers size={18} />
             </button>
             <button
               onClick={startTracking}
-              className="p-2.5 bg-card/90 backdrop-blur-xl rounded-full shadow-lg border border-border/40 text-primary hover:text-primary/80 transition-colors"
+              className="p-2.5 bg-card backdrop-blur-xl rounded-full shadow-lg border border-border text-primary hover:text-primary/80 transition-colors"
             >
               <Locate size={18} />
             </button>
@@ -100,7 +100,7 @@ const Index = () => {
 
           {/* Connection status chip */}
           <div className="absolute top-16 right-3 z-10">
-            <div className="flex items-center gap-1.5 bg-card/80 backdrop-blur-md rounded-full px-2.5 py-1 border border-border/40 shadow">
+            <div className="flex items-center gap-1.5 bg-card backdrop-blur-md rounded-full px-2.5 py-1 border border-border shadow">
               {connectionStatus === "connected" ? (
                 <Wifi size={11} className="text-safe" />
               ) : (
@@ -132,7 +132,7 @@ const Index = () => {
 
           {/* Location info bar — just above bottom sheet */}
           <div className="absolute bottom-[170px] left-3 z-10">
-            <div className="bg-card/80 backdrop-blur-md rounded-xl px-3 py-2 border border-border/40 shadow">
+            <div className="bg-card backdrop-blur-md rounded-xl px-3 py-2 border border-border shadow">
               <div className="flex items-center gap-2">
                 <Navigation size={12} className="text-primary" />
                 <p className="text-[11px] text-muted-foreground">

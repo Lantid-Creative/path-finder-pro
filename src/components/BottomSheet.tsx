@@ -43,7 +43,7 @@ const BottomSheet = ({ isAlertActive }: BottomSheetProps) => {
           expanded ? "h-[65vh]" : "h-auto"
         }`}
       >
-        <div className="bg-card/95 backdrop-blur-xl border-t border-border rounded-t-2xl h-full flex flex-col shadow-[0_-4px_30px_rgba(0,0,0,0.3)]">
+        <div className="bg-card backdrop-blur-xl border-t border-border rounded-t-2xl h-full flex flex-col shadow-[0_-4px_30px_rgba(0,0,0,0.4)]">
           {/* Handle + Header */}
           <button
             onClick={() => setExpanded(!expanded)}
@@ -106,7 +106,7 @@ const BottomSheet = ({ isAlertActive }: BottomSheetProps) => {
                 <div className={`flex items-center gap-2 p-2.5 rounded-lg border text-xs ${alertColorMap.danger}`}>
                   <AlertTriangle size={14} />
                   <span className="flex-1 font-medium">1 active alert nearby</span>
-                  <span className="opacity-60">0.3 mi</span>
+                  <span className="opacity-70">0.3 mi</span>
                 </div>
               )}
             </div>
