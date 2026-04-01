@@ -200,6 +200,33 @@ const Index = () => {
             </div>
           )}
 
+          {/* Hidden video preview for recording */}
+          {isRecordingVideo && (
+            <div className="absolute top-20 left-3 z-20 rounded-xl overflow-hidden shadow-lg border border-border">
+              <video
+                ref={localVideoRef}
+                autoPlay
+                playsInline
+                muted
+                className="w-32 h-24 object-cover bg-black"
+              />
+              <div className="absolute top-1 left-1 flex items-center gap-1 bg-alert/80 rounded-full px-1.5 py-0.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                <span className="text-[9px] text-white font-bold">REC</span>
+              </div>
+            </div>
+          )}
+
+          {/* Audio recording indicator */}
+          {isRecordingAudio && !isRecordingVideo && (
+            <div className="absolute top-20 left-3 z-20">
+              <div className="flex items-center gap-2 bg-alert/90 backdrop-blur-md rounded-xl px-3 py-2 shadow-lg">
+                <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
+                <span className="text-xs text-white font-medium">Recording audio...</span>
+              </div>
+            </div>
+          )}
+
           {/* Bottom sheet */}
           <BottomSheet isAlertActive={isAlertActive} />
 
