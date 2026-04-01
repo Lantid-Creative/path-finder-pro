@@ -104,9 +104,20 @@ const Index = () => {
                 <SidebarTrigger className="p-2.5 rounded-full hover:bg-secondary/60 text-muted-foreground shrink-0">
                   <Menu size={20} />
                 </SidebarTrigger>
-                <div className="flex-1 flex items-center gap-2 pr-3">
+                <div
+                  className="flex-1 flex items-center gap-2 pr-3"
+                  onPointerDown={(e) => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <Search size={16} className="text-muted-foreground shrink-0" />
-                  <span className="text-sm text-muted-foreground">Search places...</span>
+                  <input
+                    ref={searchInputRef}
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onFocus={(e) => e.stopPropagation()}
+                    placeholder="Search places..."
+                    className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
+                  />
                 </div>
 
                 {/* Status indicator */}
