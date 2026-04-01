@@ -189,6 +189,9 @@ const Index = () => {
             <SafetyScore location={location} />
           </div>
 
+          {/* Notification permission prompt */}
+          <NotificationPermission />
+
           {/* Threat detection alerts */}
           <ThreatDetector location={location} />
 
