@@ -12,7 +12,55 @@ import {
 
 const Index = () => {
   const [isAlertActive, setIsAlertActive] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isRecordingVideo, setIsRecordingVideo] = useState(false);
+  const [isRecordingAudio, setIsRecordingAudio] = useState(false);
+  const localVideoRef = useRef<HTMLVideoElement>(null);
+  const videoStreamRef = useRef<MediaStream | null>(null);
+  const audioStreamRef = useRef<MediaStream | null>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const { location, isTracking, connectionStatus, startTracking } = useLocationTracking();
+
+  const toggleVideo = useCallback(async () => {
+    if (isRecordingVideo) {
+      videoStreamRef.current?.getTracks().forEach(t => t.stop());
+      videoStreamRef.current = null;
+      if (localVideoRef.current) localVideoRef.current.srcObject = null;
+      setIsRecordingVideo(false);
+      toast.success("Video recording stopped");
+      return;
+    }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      videoStreamRef.current = stream;
+      if (localVideoRef.current) {
+        localVideoRef.current.srcObject = stream;
+        await localVideoRef.current.play();
+      }
+      setIsRecordingVideo(true);
+      toast.success("📹 Video recording started");
+    } catch (err) {
+      toast.error("Camera access denied. Please allow camera permissions.");
+    }
+  }, [isRecordingVideo]);
+
+  const toggleAudio = useCallback(async () => {
+    if (isRecordingAudio) {
+      audioStreamRef.current?.getTracks().forEach(t => t.stop());
+      audioStreamRef.current = null;
+      setIsRecordingAudio(false);
+      toast.success("Audio recording stopped");
+      return;
+    }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      audioStreamRef.current = stream;
+      setIsRecordingAudio(true);
+      toast.success("🎙️ Audio recording started");
+    } catch (err) {
+      toast.error("Microphone access denied. Please allow mic permissions.");
+    }
+  }, [isRecordingAudio]);
 
   const center = location ? { lat: location.lat, lng: location.lng } : { lat: 40.7128, lng: -74.006 };
 
