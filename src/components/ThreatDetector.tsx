@@ -82,7 +82,8 @@ const ThreatDetector = ({ location }: ThreatDetectorProps) => {
       .filter((a) => !dismissed.has(a.id));
 
     setThreats(nearby);
-  }, [location, dismissed]);
+    nearby.forEach(sendNotification);
+  }, [location, dismissed, sendNotification]);
 
   useEffect(() => {
     checkThreats();
