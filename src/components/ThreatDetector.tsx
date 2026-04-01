@@ -18,7 +18,32 @@ interface ThreatAlert {
 const ThreatDetector = ({ location }: ThreatDetectorProps) => {
   const [threats, setThreats] = useState<ThreatAlert[]>([]);
   const [dismissed, setDismissed] = useState<Set<string>>(new Set());
+  const [notified, setNotified] = useState<Set<string>>(new Set());
   const navigate = useNavigate();
+
+  const sendNotification = useCallback((threat: ThreatAlert) => {
+    if (notified.has(threat.id)) return;
+    setNotified((prev) => new Set(prev).add(threat.id));
+
+    if ("Notification" in window && Notification.permission === "granted") {
+      const distMeters = (threat.distance * 1000).toFixed(0);
+      const body = `${threat.message}${threat.location_name ? ` near ${threat.location_name}` : ""} — ${distMeters}m away`;
+      const notif = new Notification(
+        threat.type === "danger" ? "⚠️ Danger Nearby!" : "⚡ Safety Warning",
+        {
+          body,
+          icon: "/placeholder.svg",
+          tag: threat.id,
+          requireInteraction: threat.type === "danger",
+        }
+      );
+      notif.onclick = () => {
+        window.focus();
+        navigate("/ai-assistant");
+        notif.close();
+      };
+    }
+  }, [notified, navigate]);
 
   const checkThreats = useCallback(async () => {
     if (!location) return;
