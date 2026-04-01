@@ -7,6 +7,7 @@ import BottomSheet from "@/components/BottomSheet";
 import { toast } from "sonner";
 import SafetyScore from "@/components/SafetyScore";
 import ThreatDetector from "@/components/ThreatDetector";
+import NotificationPermission from "@/components/NotificationPermission";
 import {
   Shield, Menu, Search, Locate, Layers, Wifi, WifiOff,
   Navigation, Bell, Mic, Video, MicOff, VideoOff
