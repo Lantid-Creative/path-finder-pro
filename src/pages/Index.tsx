@@ -136,11 +136,25 @@ const Index = () => {
           {/* Right side floating buttons (Google Maps style) */}
           <div className="absolute right-3 top-1/2 -translate-y-1/2 z-10 flex flex-col gap-2">
             {/* Record buttons */}
-            <button className="p-2.5 bg-card backdrop-blur-xl rounded-full shadow-lg border border-border text-foreground hover:text-primary transition-colors">
-              <Video size={18} />
+            <button
+              onClick={toggleVideo}
+              className={`p-2.5 backdrop-blur-xl rounded-full shadow-lg border transition-colors ${
+                isRecordingVideo
+                  ? "bg-alert/20 border-alert text-alert"
+                  : "bg-card border-border text-foreground hover:text-primary"
+              }`}
+            >
+              {isRecordingVideo ? <VideoOff size={18} /> : <Video size={18} />}
             </button>
-            <button className="p-2.5 bg-card backdrop-blur-xl rounded-full shadow-lg border border-border text-foreground hover:text-primary transition-colors">
-              <Mic size={18} />
+            <button
+              onClick={toggleAudio}
+              className={`p-2.5 backdrop-blur-xl rounded-full shadow-lg border transition-colors ${
+                isRecordingAudio
+                  ? "bg-alert/20 border-alert text-alert"
+                  : "bg-card border-border text-foreground hover:text-primary"
+              }`}
+            >
+              {isRecordingAudio ? <MicOff size={18} /> : <Mic size={18} />}
             </button>
 
             <div className="h-2" />
