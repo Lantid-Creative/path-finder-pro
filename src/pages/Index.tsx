@@ -197,6 +197,13 @@ const Index = () => {
           {/* Threat detection alerts */}
           <ThreatDetector location={location} />
 
+          {/* Safe route panel */}
+          <SafeRoutePanel
+            location={location}
+            onRouteRequest={setRouteRequest}
+            isRouteActive={!!routeRequest}
+          />
+
           {/* SOS Button — floating center bottom above sheet */}
           <div className="absolute bottom-[14.5rem] left-1/2 -translate-x-1/2 z-20">
             <SOSButton onTrigger={handleSOS} isActive={isAlertActive} />
