@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import MapView, { useLocationTracking } from "@/components/MapView";
@@ -7,7 +7,7 @@ import BottomSheet from "@/components/BottomSheet";
 import { toast } from "sonner";
 import {
   Shield, Menu, Search, Locate, Layers, Wifi, WifiOff,
-  Navigation, Bell, Mic, Video
+  Navigation, Bell, Mic, Video, MicOff, VideoOff
 } from "lucide-react";
 
 const Index = () => {
