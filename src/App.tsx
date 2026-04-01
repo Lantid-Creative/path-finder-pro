@@ -43,6 +43,7 @@ const AppLayout = () => {
         <Route path="/community" element={<ProtectedRoute><Community /></ProtectedRoute>} />
         <Route path="/alerts" element={<ProtectedRoute><Community /></ProtectedRoute>} />
         <Route path="/chat" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
+        <Route path="/ai-assistant" element={<ProtectedRoute><AIAssistant /></ProtectedRoute>} />
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDashboard />} />
           <Route path="users" element={<AdminUsers />} />

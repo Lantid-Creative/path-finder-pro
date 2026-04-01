@@ -1,9 +1,10 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { Map, Users, MessageCircle, Bell } from "lucide-react";
+import { Map, Users, MessageCircle, Bell, Bot } from "lucide-react";
 
 const tabs = [
   { label: "Map", path: "/", icon: Map },
   { label: "Community", path: "/community", icon: Users },
+  { label: "AI", path: "/ai-assistant", icon: Bot },
   { label: "Chat", path: "/chat", icon: MessageCircle },
   { label: "Alerts", path: "/alerts", icon: Bell },
 ];
