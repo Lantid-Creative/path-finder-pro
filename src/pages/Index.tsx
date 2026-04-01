@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import SafetyScore from "@/components/SafetyScore";
 import ThreatDetector from "@/components/ThreatDetector";
 import NotificationPermission from "@/components/NotificationPermission";
+import SafeRoutePanel, { type RouteRequest } from "@/components/SafeRoutePanel";
 import {
   Shield, Menu, Search, Locate, Layers, Wifi, WifiOff,
   Navigation, Bell, Mic, Video, MicOff, VideoOff
@@ -16,6 +17,7 @@ import {
 const Index = () => {
   const [isAlertActive, setIsAlertActive] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [routeRequest, setRouteRequest] = useState<RouteRequest | null>(null);
   const [isRecordingVideo, setIsRecordingVideo] = useState(false);
   const [isRecordingAudio, setIsRecordingAudio] = useState(false);
   const localVideoRef = useRef<HTMLVideoElement>(null);
@@ -97,7 +99,7 @@ const Index = () => {
 
         <div className="flex-1 relative h-full">
           {/* Full-screen map */}
-          <MapView location={location} communityMarkers={communityMarkers} />
+          <MapView location={location} communityMarkers={communityMarkers} routeRequest={routeRequest} />
 
           {/* Top bar — Google Maps style */}
           <div className="absolute top-0 left-0 right-0 z-10 safe-area-top">
@@ -194,6 +196,13 @@ const Index = () => {
 
           {/* Threat detection alerts */}
           <ThreatDetector location={location} />
+
+          {/* Safe route panel */}
+          <SafeRoutePanel
+            location={location}
+            onRouteRequest={setRouteRequest}
+            isRouteActive={!!routeRequest}
+          />
 
           {/* SOS Button — floating center bottom above sheet */}
           <div className="absolute bottom-[14.5rem] left-1/2 -translate-x-1/2 z-20">

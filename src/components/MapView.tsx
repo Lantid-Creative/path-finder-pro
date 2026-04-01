@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { APIProvider, Map, AdvancedMarker, useMap } from "@vis.gl/react-google-maps";
+import SafeRouteOverlay from "./SafeRouteOverlay";
+import type { RouteRequest } from "./SafeRoutePanel";
 
 const GOOGLE_MAPS_KEY = "AIzaSyCazL5Cqw90gNr2Kn28q3iXIfdwmI4Coss";
 
@@ -23,9 +25,11 @@ function LocationTracker({ location }: { location: LocationState | null }) {
 interface MapViewProps {
   location: LocationState | null;
   communityMarkers: { lat: number; lng: number; type: "safe" | "warning" }[];
+  routeRequest?: RouteRequest | null;
+  onRouteReady?: (info: { duration: string; distance: string } | null) => void;
 }
 
-const MapView = ({ location, communityMarkers }: MapViewProps) => {
+const MapView = ({ location, communityMarkers, routeRequest, onRouteReady }: MapViewProps) => {
   const center = location ? { lat: location.lat, lng: location.lng } : DEFAULT_LOCATION;
 
   return (
@@ -41,6 +45,7 @@ const MapView = ({ location, communityMarkers }: MapViewProps) => {
           style={{ width: "100%", height: "100%" }}
         >
           <LocationTracker location={location} />
+          <SafeRouteOverlay routeRequest={routeRequest || null} onRouteReady={onRouteReady} />
 
           {location && (
             <AdvancedMarker position={{ lat: location.lat, lng: location.lng }}>
