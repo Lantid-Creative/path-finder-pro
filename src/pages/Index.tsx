@@ -173,8 +173,8 @@ const Index = () => {
             </button>
           </div>
 
-          {/* Connection status chip */}
-          <div className="absolute top-16 right-3 z-10">
+          {/* Connection status + Safety score */}
+          <div className="absolute top-16 right-3 z-10 flex flex-col items-end gap-2">
             <div className="flex items-center gap-1.5 bg-card backdrop-blur-md rounded-full px-2.5 py-1 border border-border shadow">
               {connectionStatus === "connected" ? (
                 <Wifi size={11} className="text-safe" />
@@ -185,7 +185,11 @@ const Index = () => {
                 {connectionStatus === "connected" ? "Live" : "Offline"}
               </span>
             </div>
+            <SafetyScore location={location} />
           </div>
+
+          {/* Threat detection alerts */}
+          <ThreatDetector location={location} />
 
           {/* SOS Button — floating center bottom above sheet */}
           <div className="absolute bottom-[14.5rem] left-1/2 -translate-x-1/2 z-20">
