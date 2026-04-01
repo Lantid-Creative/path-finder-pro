@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useRef, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Route, X, Navigation, MapPin, Shield, Loader2 } from "lucide-react";
@@ -17,17 +18,18 @@ interface SafeRoutePanelProps {
 const SafeRoutePanel = ({ location, onRouteRequest, isRouteActive }: SafeRoutePanelProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [destination, setDestination] = useState("");
-  const [predictions, setPredictions] = useState<google.maps.places.AutocompletePrediction[]>([]);
+  const [predictions, setPredictions] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const autocompleteService = useRef<google.maps.places.AutocompleteService | null>(null);
-  const placesService = useRef<google.maps.places.PlacesService | null>(null);
+  const autocompleteService = useRef<any>(null);
+  const placesService = useRef<any>(null);
   const debounceTimer = useRef<ReturnType<typeof setTimeout>>();
 
   useEffect(() => {
-    if (window.google?.maps?.places) {
-      autocompleteService.current = new google.maps.places.AutocompleteService();
+    const g = (window as any).google;
+    if (g?.maps?.places) {
+      autocompleteService.current = new g.maps.places.AutocompleteService();
       const div = document.createElement("div");
-      placesService.current = new google.maps.places.PlacesService(div);
+      placesService.current = new g.maps.places.PlacesService(div);
     }
   }, [isOpen]);
 
@@ -38,22 +40,20 @@ const SafeRoutePanel = ({ location, onRouteRequest, isRouteActive }: SafeRoutePa
       return;
     }
     debounceTimer.current = setTimeout(() => {
-      const request: google.maps.places.AutocompletionRequest = {
+      const g = (window as any).google;
+      const request: any = {
         input,
         ...(location && {
-          locationBias: new google.maps.Circle({
-            center: location,
-            radius: 10000,
-          }),
+          locationBias: new g.maps.Circle({ center: location, radius: 10000 }),
         }),
       };
-      autocompleteService.current!.getPlacePredictions(request, (results) => {
+      autocompleteService.current.getPlacePredictions(request, (results: any) => {
         setPredictions(results || []);
       });
     }, 300);
   };
 
-  const selectPlace = (prediction: google.maps.places.AutocompletePrediction) => {
+  const selectPlace = (prediction: any) => {
     if (!placesService.current || !location) return;
     setIsLoading(true);
     setDestination(prediction.structured_formatting.main_text);
@@ -61,7 +61,7 @@ const SafeRoutePanel = ({ location, onRouteRequest, isRouteActive }: SafeRoutePa
 
     placesService.current.getDetails(
       { placeId: prediction.place_id, fields: ["geometry", "name"] },
-      async (place) => {
+      async (place: any) => {
         if (!place?.geometry?.location) {
           setIsLoading(false);
           return;
@@ -70,7 +70,6 @@ const SafeRoutePanel = ({ location, onRouteRequest, isRouteActive }: SafeRoutePa
         const destLat = place.geometry.location.lat();
         const destLng = place.geometry.location.lng();
 
-        // Fetch nearby community alerts to build avoidance zones
         const { data: alerts } = await supabase
           .from("community_alerts")
           .select("latitude, longitude, type")
@@ -121,7 +120,7 @@ const SafeRoutePanel = ({ location, onRouteRequest, isRouteActive }: SafeRoutePa
               <Shield size={16} className="text-safe" />
               <div>
                 <p className="text-xs font-bold text-foreground">Safe Route Active</p>
-                <p className="text-[10px] text-muted-foreground">Avoiding {destination || "reported areas"}</p>
+                <p className="text-[10px] text-muted-foreground">Avoiding reported danger zones</p>
               </div>
             </div>
             <button
@@ -153,7 +152,6 @@ const SafeRoutePanel = ({ location, onRouteRequest, isRouteActive }: SafeRoutePa
             </button>
           </div>
 
-          {/* Origin */}
           <div className="flex items-center gap-2 mb-2">
             <Navigation size={12} className="text-primary shrink-0" />
             <p className="text-[11px] text-muted-foreground truncate">
@@ -161,7 +159,6 @@ const SafeRoutePanel = ({ location, onRouteRequest, isRouteActive }: SafeRoutePa
             </p>
           </div>
 
-          {/* Destination input */}
           <div className="flex items-center gap-2 bg-secondary rounded-lg px-3 py-2">
             <MapPin size={12} className="text-alert shrink-0" />
             <input
@@ -181,10 +178,9 @@ const SafeRoutePanel = ({ location, onRouteRequest, isRouteActive }: SafeRoutePa
           </div>
         </div>
 
-        {/* Predictions list */}
         {predictions.length > 0 && (
           <div className="border-t border-border max-h-40 overflow-y-auto">
-            {predictions.map((p) => (
+            {predictions.map((p: any) => (
               <button
                 key={p.place_id}
                 onClick={() => selectPlace(p)}
