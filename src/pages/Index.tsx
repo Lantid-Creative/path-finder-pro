@@ -99,7 +99,7 @@ const Index = () => {
 
         <div className="flex-1 relative h-full">
           {/* Full-screen map */}
-          <MapView location={location} communityMarkers={communityMarkers} />
+          <MapView location={location} communityMarkers={communityMarkers} routeRequest={routeRequest} />
 
           {/* Top bar — Google Maps style */}
           <div className="absolute top-0 left-0 right-0 z-10 safe-area-top">
