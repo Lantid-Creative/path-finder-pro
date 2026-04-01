@@ -17,6 +17,7 @@ import {
 const Index = () => {
   const [isAlertActive, setIsAlertActive] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [routeRequest, setRouteRequest] = useState<RouteRequest | null>(null);
   const [isRecordingVideo, setIsRecordingVideo] = useState(false);
   const [isRecordingAudio, setIsRecordingAudio] = useState(false);
   const localVideoRef = useRef<HTMLVideoElement>(null);
